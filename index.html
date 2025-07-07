@@ -17,7 +17,6 @@
             color: #333;
             line-height: 1.6;
             padding: 20px;
-            overflow-x: hidden;
         }
 
         .flipbook-container {
@@ -32,7 +31,6 @@
             position: relative;
             width: 100%;
             height: 100%;
-            margin: 0 auto;
             background: #333;
             border-radius: 8px;
             box-shadow: 0 0 40px rgba(0,0,0,0.3);
@@ -40,38 +38,17 @@
 
         .page {
             position: absolute;
+            top: 0;
             width: 50%;
             height: 100%;
-            top: 0;
             background: white;
             border: 1px solid #ddd;
-            transform-style: preserve-3d;
-            transition: transform 1.2s cubic-bezier(0.15, 0.5, 0.5, 1);
+            transition: transform 1s cubic-bezier(.86,0,.07,1);
             backface-visibility: hidden;
-        }
-
-        .page-content {
-            width: 100%;
-            height: 100%;
             padding: 30px;
             overflow-y: auto;
-            position: relative;
-            backface-visibility: hidden;
         }
 
-        .page-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            background: white;
-            transform: rotateY(180deg);
-            border: 1px solid #ddd;
-            backface-visibility: hidden;
-        }
-
-        /* Static left pages */
         .page.left {
             left: 0;
             border-right: 2px solid #333;
@@ -79,18 +56,12 @@
             z-index: 1;
         }
 
-        /* Flippable right pages */
         .page.right {
             right: 0;
-            transform-origin: left center;
             border-left: 2px solid #333;
             border-radius: 0 8px 8px 0;
+            transform-origin: left center;
             z-index: 2;
-        }
-
-        .page.right.flipping {
-            transform: rotateY(-180deg);
-            z-index: 3;
         }
 
         .page.right.flipped {
@@ -102,20 +73,27 @@
             display: none;
         }
 
-        /* Page shadows for depth */
-        .page::before {
+        /* Page shadows */
+        .page.left::after {
             content: '';
             position: absolute;
             top: 0;
-            width: 100%;
+            right: 0;
+            width: 10px;
             height: 100%;
-            background: linear-gradient(to right, rgba(0,0,0,0.1) 0%, transparent 10%);
+            background: linear-gradient(to left, rgba(0,0,0,0.1), transparent);
             pointer-events: none;
-            z-index: 1;
         }
 
-        .page.right::before {
-            background: linear-gradient(to left, rgba(0,0,0,0.1) 0%, transparent 10%);
+        .page.right::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 10px;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.1), transparent);
+            pointer-events: none;
         }
 
         /* Page numbering */
@@ -124,7 +102,6 @@
             bottom: 15px;
             font-size: 0.9em;
             color: #666;
-            z-index: 10;
         }
 
         .page.left .page-number {
@@ -307,7 +284,7 @@
                 height: 600px;
             }
             
-            .page-content {
+            .page {
                 padding: 20px;
             }
             
@@ -333,146 +310,140 @@
 <body>
     <div class="flipbook-container">
         <div class="book">
-            <!-- Left page 1 (Always visible on left) -->
-            <div class="page left" id="leftPage1">
-                <div class="page-content">
-                    <h1>How to Read a Scientific Paper</h1>
-                    <p class="subtitle">Adapted from Fosmire & Edmondson</p>
-                    
-                    <div style="text-align: center; margin: 40px 0;">
-                        <p style="font-size: 1.1em; color: #7f8c8d;">A strategic approach to understanding research papers efficiently</p>
-                    </div>
-                    
-                    <div class="key-insight">
-                        <strong>What you'll learn:</strong> How to read scientific papers strategically, understand their structure, and extract key information without getting overwhelmed.
-                    </div>
+            <!-- Static left page -->
+            <div class="page left" id="leftPage">
+                <h1>How to Read a Scientific Paper</h1>
+                <p class="subtitle">Adapted from Fosmire & Edmondson</p>
+                
+                <div style="text-align: center; margin: 40px 0;">
+                    <p style="font-size: 1.1em; color: #7f8c8d;">A strategic approach to understanding research papers efficiently</p>
+                </div>
+                
+                <div class="key-insight">
+                    <strong>What you'll learn:</strong> How to read scientific papers strategically, understand their structure, and extract key information without getting overwhelmed.
                 </div>
                 <div class="page-number">1</div>
             </div>
 
             <!-- Right page 1 -->
-            <div class="page right" id="rightPage1">
-                <div class="page-content">
-                    <h2>1. Why Read Scientific Papers?</h2>
-                    <p>Scientific papers are essential because they:</p>
-                    <ul>
-                        <li>Provide the most <strong>current</strong> and up-to-date research</li>
-                        <li>Include <strong>raw data</strong> and detailed <strong>experimental conditions</strong></li>
-                        <li>Allow for <strong>replication</strong> of studies by others</li>
-                        <li>Present the authors' <strong>logic, assumptions, and conclusions</strong></li>
-                        <li>Support your own <strong>research, experiments, and writing</strong></li>
-                    </ul>
-                    
-                    <div class="key-insight">
-                        <strong>Key insight:</strong> Scientific papers are your gateway to the most reliable and current knowledge in any field. They're not just sources—they're blueprints for understanding how knowledge is created.
-                    </div>
-                </div>
-                <div class="page-back">
-                    <div class="page-content">
-                        <h2>2. A Smarter Reading Strategy</h2>
-                        <div class="key-insight">
-                            <strong>Do not read straight through.</strong> It's inefficient and often confusing.
-                        </div>
-                        
-                        <div class="strategy-order">
-                            <h3>Follow this order:</h3>
-                            <ol>
-                                <li><strong>Abstract first</strong><br>
-                                    Get the big picture and decide if it's relevant</li>
-                                <li><strong>Discussion/Conclusion</strong><br>
-                                    Understand the authors' interpretation</li>
-                                <li><strong>Introduction</strong><br>
-                                    Learn the context and research gaps</li>
-                                <li><strong>Results</strong><br>
-                                    Examine figures and tables for patterns</li>
-                                <li><strong>Methods last</strong><br>
-                                    Technical details (if needed for your work)</li>
-                            </ol>
-                        </div>
-                    </div>
+            <div class="page right" id="page1">
+                <h2>1. Why Read Scientific Papers?</h2>
+                <p>Scientific papers are essential because they:</p>
+                <ul>
+                    <li>Provide the most <strong>current</strong> and up-to-date research</li>
+                    <li>Include <strong>raw data</strong> and detailed <strong>experimental conditions</strong></li>
+                    <li>Allow for <strong>replication</strong> of studies by others</li>
+                    <li>Present the authors' <strong>logic, assumptions, and conclusions</strong></li>
+                    <li>Support your own <strong>research, experiments, and writing</strong></li>
+                </ul>
+                
+                <div class="key-insight">
+                    <strong>Key insight:</strong> Scientific papers are your gateway to the most reliable and current knowledge in any field. They're not just sources—they're blueprints for understanding how knowledge is created.
                 </div>
                 <div class="page-number">2</div>
             </div>
 
             <!-- Right page 2 (hidden initially) -->
-            <div class="page right hidden" id="rightPage2">
-                <div class="page-content">
-                    <h2>3. Tools for Reading Effectively</h2>
-                    <ul>
-                        <li>Use a <strong>scientific dictionary</strong> for unfamiliar terms</li>
-                        <li>Keep a <strong>notebook</strong> for questions and summaries</li>
-                        <li><strong>Talk with others</strong> about challenging parts</li>
-                        <li>Practice <strong>active reading</strong> with annotations</li>
-                    </ul>
-
-                    <h2>4. Paper Structure</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Section</th>
-                                <th>Purpose</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td><strong>Abstract</strong></td><td>Summary of findings</td></tr>
-                            <tr><td><strong>Introduction</strong></td><td>Background & motivation</td></tr>
-                            <tr><td><strong>Methods</strong></td><td>Study procedures</td></tr>
-                            <tr><td><strong>Results</strong></td><td>Raw findings</td></tr>
-                            <tr><td><strong>Discussion</strong></td><td>Interpretation</td></tr>
-                            <tr><td><strong>References</strong></td><td>Sources cited</td></tr>
-                        </tbody>
-                    </table>
+            <div class="page right hidden" id="page2">
+                <h2>2. A Smarter Reading Strategy</h2>
+                <div class="key-insight">
+                    <strong>Do not read straight through.</strong> It's inefficient and often confusing.
                 </div>
-                <div class="page-back">
-                    <div class="page-content">
-                        <h2>5. Reading Figures and Tables</h2>
-                        <ul>
-                            <li>Check <strong>axes, scales, and units</strong> first</li>
-                            <li>Identify the <strong>variables being compared</strong></li>
-                            <li>Ask: What trend is shown? Does it support conclusions?</li>
-                            <li>Read <strong>figure captions</strong> carefully</li>
-                        </ul>
-
-                        <h2>6. Signs You Understand the Paper</h2>
-                        <p>You can:</p>
-                        <ul>
-                            <li>Summarize the <strong>purpose, methods, and findings</strong></li>
-                            <li>Explain how results connect to the research question</li>
-                            <li>Compare findings to other work you've read</li>
-                            <li>Decide whether to cite or build upon the article</li>
-                        </ul>
-
-                        <div class="key-insight">
-                            <strong>Pro tip:</strong> Figures often tell the story more clearly than text. Master reading them and you'll understand papers much faster!
-                        </div>
-                    </div>
+                
+                <div class="strategy-order">
+                    <h3>Follow this order:</h3>
+                    <ol>
+                        <li><strong>Abstract first</strong><br>
+                            Get the big picture and decide if it's relevant</li>
+                        <li><strong>Discussion/Conclusion</strong><br>
+                            Understand the authors' interpretation</li>
+                        <li><strong>Introduction</strong><br>
+                            Learn the context and research gaps</li>
+                        <li><strong>Results</strong><br>
+                            Examine figures and tables for patterns</li>
+                        <li><strong>Methods last</strong><br>
+                            Technical details (if needed for your work)</li>
+                    </ol>
                 </div>
+                <div class="page-number">3</div>
+            </div>
+
+            <!-- Right page 3 (hidden initially) -->
+            <div class="page right hidden" id="page3">
+                <h2>3. Tools for Reading Effectively</h2>
+                <ul>
+                    <li>Use a <strong>scientific dictionary</strong> for unfamiliar terms</li>
+                    <li>Keep a <strong>notebook</strong> for questions and summaries</li>
+                    <li><strong>Talk with others</strong> about challenging parts</li>
+                    <li>Practice <strong>active reading</strong> with annotations</li>
+                </ul>
+
+                <h2>4. Paper Structure</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Section</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Abstract</strong></td><td>Summary of findings</td></tr>
+                        <tr><td><strong>Introduction</strong></td><td>Background & motivation</td></tr>
+                        <tr><td><strong>Methods</strong></td><td>Study procedures</td></tr>
+                        <tr><td><strong>Results</strong></td><td>Raw findings</td></tr>
+                        <tr><td><strong>Discussion</strong></td><td>Interpretation</td></tr>
+                        <tr><td><strong>References</strong></td><td>Sources cited</td></tr>
+                    </tbody>
+                </table>
                 <div class="page-number">4</div>
             </div>
 
-            <!-- Right page 3 (final page) -->
-            <div class="page right hidden" id="rightPage3">
-                <div class="page-content">
-                    <div class="completion">
-                        <h1>You're Ready!</h1>
-                        <p>You now have a strategic approach to reading scientific papers efficiently.</p>
-                        
-                        <div class="strategy-order">
-                            <h3>Remember the order:</h3>
-                            <ol>
-                                <li>Abstract → Big picture</li>
-                                <li>Discussion → Conclusions</li>
-                                <li>Introduction → Context</li>
-                                <li>Results → Evidence</li>
-                                <li>Methods → Details</li>
-                            </ol>
-                        </div>
-                        
-                        <p><strong>Practice this approach and watch your comprehension improve dramatically!</strong></p>
-                        
-                        <div style="margin-top: 30px; padding: 20px; background: rgba(39, 174, 96, 0.1); border-radius: 8px;">
-                            <strong>Ready to start reading like a scientist?</strong>
-                        </div>
+            <!-- Right page 4 (hidden initially) -->
+            <div class="page right hidden" id="page4">
+                <h2>5. Reading Figures and Tables</h2>
+                <ul>
+                    <li>Check <strong>axes, scales, and units</strong> first</li>
+                    <li>Identify the <strong>variables being compared</strong></li>
+                    <li>Ask: What trend is shown? Does it support conclusions?</li>
+                    <li>Read <strong>figure captions</strong> carefully</li>
+                </ul>
+
+                <h2>6. Signs You Understand the Paper</h2>
+                <p>You can:</p>
+                <ul>
+                    <li>Summarize the <strong>purpose, methods, and findings</strong></li>
+                    <li>Explain how results connect to the research question</li>
+                    <li>Compare findings to other work you've read</li>
+                    <li>Decide whether to cite or build upon the article</li>
+                </ul>
+
+                <div class="key-insight">
+                    <strong>Pro tip:</strong> Figures often tell the story more clearly than text. Master reading them and you'll understand papers much faster!
+                </div>
+                <div class="page-number">5</div>
+            </div>
+
+            <!-- Right page 5 (final page) -->
+            <div class="page right hidden" id="page5">
+                <div class="completion">
+                    <h1>You're Ready!</h1>
+                    <p>You now have a strategic approach to reading scientific papers efficiently.</p>
+                    
+                    <div class="strategy-order">
+                        <h3>Remember the order:</h3>
+                        <ol>
+                            <li>Abstract → Big picture</li>
+                            <li>Discussion → Conclusions</li>
+                            <li>Introduction → Context</li>
+                            <li>Results → Evidence</li>
+                            <li>Methods → Details</li>
+                        </ol>
+                    </div>
+                    
+                    <p><strong>Practice this approach and watch your comprehension improve dramatically!</strong></p>
+                    
+                    <div style="margin-top: 30px; padding: 20px; background: rgba(39, 174, 96, 0.1); border-radius: 8px;">
+                        <strong>Ready to start reading like a scientist?</strong>
                     </div>
                 </div>
                 <div class="page-number">6</div>
@@ -487,51 +458,42 @@
 
     <script>
         let currentPage = 1;
-        const totalPages = 3;
+        const totalPages = 5;
 
-        function nextPage() {
+        function turnPage() {
             if (currentPage < totalPages) {
-                const currentRightPage = document.getElementById(`rightPage${currentPage}`);
+                // Flip current page
+                document.getElementById(`page${currentPage}`).classList.add('flipped');
                 
-                // Start the flip animation
-                currentRightPage.classList.add('flipping');
-                
+                // Show next page after flip animation starts
                 setTimeout(() => {
-                    // Complete the flip and show next page
-                    currentRightPage.classList.remove('flipping');
-                    currentRightPage.classList.add('flipped');
-                    currentRightPage.classList.add('hidden');
-                    
+                    document.getElementById(`page${currentPage + 1}`).classList.remove('hidden');
                     currentPage++;
-                    
-                    if (currentPage <= totalPages) {
-                        const nextRightPage = document.getElementById(`rightPage${currentPage}`);
-                        nextRightPage.classList.remove('hidden');
-                    }
-                    
                     updateControls();
-                }, 600);
+                }, 200);
             }
         }
 
-        function previousPage() {
+        function turnBack() {
             if (currentPage > 1) {
-                const currentRightPage = document.getElementById(`rightPage${currentPage}`);
-                currentRightPage.classList.add('hidden');
-                
+                // Hide current page
+                document.getElementById(`page${currentPage}`).classList.add('hidden');
                 currentPage--;
                 
-                const prevRightPage = document.getElementById(`rightPage${currentPage}`);
-                prevRightPage.classList.remove('hidden');
-                prevRightPage.classList.remove('flipped');
-                prevRightPage.classList.add('flipping');
-                
+                // Unflip previous page
                 setTimeout(() => {
-                    prevRightPage.classList.remove('flipping');
-                }, 50);
-                
-                updateControls();
+                    document.getElementById(`page${currentPage}`).classList.remove('flipped');
+                    updateControls();
+                }, 100);
             }
+        }
+
+        function nextPage() {
+            turnPage();
+        }
+
+        function previousPage() {
+            turnBack();
         }
 
         function updateControls() {
