@@ -27,6 +27,13 @@
             flex-direction: column;
         }
 
+        .page-container {
+            position: relative;
+            flex: 1;
+            perspective: 1200px;
+            overflow: hidden;
+        }
+
         .page {
             background: white;
             border-radius: 8px;
@@ -35,13 +42,29 @@
             flex: 1;
             overflow-y: auto;
             transform-origin: left center;
-            transition: transform 0.6s ease, opacity 0.6s ease;
-            position: relative;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: absolute;
+            width: 100%;
+            top: 0;
+            left: 0;
         }
 
-        .page.turning {
-            transform: rotateY(-15deg);
-            opacity: 0.7;
+        .page.turning-out {
+            transform: rotateY(-180deg) scale(0.8);
+            opacity: 0;
+            z-index: 2;
+        }
+
+        .page.turning-in {
+            transform: rotateY(180deg) scale(0.8);
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .page.current {
+            transform: rotateY(0deg) scale(1);
+            opacity: 1;
+            z-index: 3;
         }
 
         .page.hidden {
@@ -225,8 +248,9 @@
 </head>
 <body>
     <div class="container">
-        <!-- Page 1 -->
-        <div class="page" id="page1">
+        <div class="page-container">
+            <!-- Page 1 -->
+            <div class="page current" id="page1">
             <h1>How to Read a Scientific Paper</h1>
             <p class="subtitle">Adapted from Fosmire & Edmondson</p>
             
@@ -336,6 +360,7 @@
                 
                 <p><strong>Practice this approach with your next scientific paper and watch your comprehension improve dramatically.</strong></p>
             </div>
+            </div>
         </div>
 
         <div class="controls">
@@ -354,9 +379,10 @@
         function updatePageDisplay() {
             for (let i = 1; i <= totalPages; i++) {
                 const page = document.getElementById(`page${i}`);
+                page.classList.remove('current', 'turning-out', 'turning-in', 'hidden');
+                
                 if (i === currentPageNum) {
-                    page.classList.remove('hidden');
-                    page.classList.remove('turning');
+                    page.classList.add('current');
                 } else {
                     page.classList.add('hidden');
                 }
@@ -376,19 +402,64 @@
         function nextPage() {
             if (currentPageNum < totalPages) {
                 const currentPage = document.getElementById(`page${currentPageNum}`);
-                currentPage.classList.add('turning');
+                const nextPageEl = document.getElementById(`page${currentPageNum + 1}`);
+                
+                // Prepare next page
+                nextPageEl.classList.remove('hidden');
+                nextPageEl.classList.add('turning-in');
+                
+                // Start turning current page out
+                currentPage.classList.add('turning-out');
                 
                 setTimeout(() => {
+                    // Complete the transition
+                    currentPage.classList.remove('current', 'turning-out');
+                    currentPage.classList.add('hidden');
+                    
+                    nextPageEl.classList.remove('turning-in');
+                    nextPageEl.classList.add('current');
+                    
                     currentPageNum++;
-                    updatePageDisplay();
-                }, 300);
+                    updateButtonStates();
+                }, 400);
             }
         }
 
         function previousPage() {
             if (currentPageNum > 1) {
-                currentPageNum--;
-                updatePageDisplay();
+                const currentPage = document.getElementById(`page${currentPageNum}`);
+                const prevPageEl = document.getElementById(`page${currentPageNum - 1}`);
+                
+                // Prepare previous page
+                prevPageEl.classList.remove('hidden');
+                prevPageEl.classList.add('turning-in');
+                
+                // Start turning current page out
+                currentPage.classList.add('turning-out');
+                
+                setTimeout(() => {
+                    // Complete the transition
+                    currentPage.classList.remove('current', 'turning-out');
+                    currentPage.classList.add('hidden');
+                    
+                    prevPageEl.classList.remove('turning-in');
+                    prevPageEl.classList.add('current');
+                    
+                    currentPageNum--;
+                    updateButtonStates();
+                }, 400);
+            }
+        }
+
+        function updateButtonStates() {
+            document.getElementById('currentPage').textContent = currentPageNum;
+            document.getElementById('prevBtn').disabled = currentPageNum === 1;
+            document.getElementById('nextBtn').disabled = currentPageNum === totalPages;
+            
+            if (currentPageNum === totalPages) {
+                document.getElementById('nextBtn').textContent = 'Complete ✓';
+            } else {
+                document.getElementById('nextBtn').textContent = 'Next →';
             }
         }
 
